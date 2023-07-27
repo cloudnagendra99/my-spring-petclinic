@@ -8,7 +8,7 @@ pipeline {
         pollSCM('* * * * *')
     }
     tools {
-        JDK 'JAVA-17' 
+        JDK 'JDK_17' 
     }
     stages {
         stage('vcs') {

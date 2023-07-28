@@ -2,36 +2,31 @@ pipeline {
     agent { label 'JDK-17' }
     options {
         timeout(time: 30, unit: 'MINUTES')
-
     }
-    triggers { 
+    triggers {
         pollSCM('* * * * *')
     }
     tools {
-        jdk 'JDK-17' 
+        jdk 'JDK_17'
     }
     stages {
         stage('vcs') {
             steps {
                 git url: 'https://github.com/cloudnagendra99/my-spring-petclinic.git',
-                    branch: 'main'
-            }   
- 
+                    branch: 'develop'
+            }
         }
         stage('build and package') {
             steps {
-                sh script: 'mvn clean package'
+                sh script: 'mvn package'
             }
-
         }
         stage('reporting') {
             steps {
-                jnuit testResults: '**/surefire-reports/TEST-*.xml'    
-                archiveArtifacts artifacts: '**/target/spring-petclinic-3.1.0-SNAPSHOT.jar'
+                archiveArtifacts artifacts: '**/target/springpetclinic-*.jar'
+                junit testResults: '**/target/surefire-reports/TEST-*.xml'
             }
-
         }
-
     }
 
 }

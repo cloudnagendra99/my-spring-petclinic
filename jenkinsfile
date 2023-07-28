@@ -27,7 +27,7 @@ pipeline {
         stage('reporting') {
             steps {
                 jnuit testResults: '**/surefire-reports/TEST-*.xml'    
-                archiveArtifacts artifacts: '**/target/my-spring-petclinic-*.jar'
+                archiveArtifacts artifacts: '**/target/spring-petclinic-*.jar'
 
             }
       

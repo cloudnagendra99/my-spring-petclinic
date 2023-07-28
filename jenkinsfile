@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('vcs') {
             steps {
-                git url: 'https://github.com/spring-projects/spring-petclinic.git',
+                git url: 'https://github.com/cloudnagendra99/my-spring-petclinic.git',
                     branch: 'main'
             }   
  
@@ -27,7 +27,7 @@ pipeline {
         stage('reporting') {
             steps {
                 jnuit testResults: '**/surefire-reports/TEST-*.xml'    
-                archiveArtifacts artifacts: '**/target/spring-petclinic-*.jar'
+                archiveArtifacts artifacts: '**/target/my-spring-petclinic-*.jar'
 
             }
       

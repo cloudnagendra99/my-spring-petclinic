@@ -4,6 +4,9 @@ pipeline {
         timeout(time: 30, unit: 'MINUTES')
 
     }
+    triggers { 
+        pollSCM('* * * * *')
+    }
     tools {
         jdk 'JDK-17' 
     }
@@ -24,7 +27,7 @@ pipeline {
         stage('reporting') {
             steps {
                 jnuit testResults: '**/surefire-reports/TEST-*.xml'    
-                archiveArtifacts artifacts: '**/target/spring-petclinic-*.jar'
+                archiveArtifacts artifacts: '**/target/spring-petclinic-3.1.0-SNAPSHOT.jar'
             }
 
         }

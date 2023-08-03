@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'JDK-17' }
+    agent any
     options {
         timeout(time: 30, unit: 'MINUTES')
     }
@@ -18,12 +18,30 @@ pipeline {
         }
         stage('build and package') {
             steps {
-                sh script: 'mvn package'
+                rtMavenDeployer (
+                    id: "SPC_DEPLOYER",
+                    serverId: "JFROG_CLOUD",
+                    releaseRepo: 'my-app-libs-snapshot-local',
+                    snapshotRepo: 'my-app-libs-snapshot-local'
+                )
+                rtMavenRun (
+                    tool: 'MAVEN_3.9.3', // Tool name from Jenkins configuration
+                    pom: 'pom.xml',
+                    goals: 'clean install',
+                    deployerId: "SPC_DEPLOYER",
+                    //resolverId: "MAVEN_RESOLVER"
+                    //buildName: "${JOB_NAME}"
+                    //buildNumber: "${BUILD_ID}"
+                )
+                    //sh script: 'mvn package'
+                rtPublishBuildInfo (
+                    serverId: "JFROG_CLOUD"
+                )
             }
         }
         stage('reporting') {
             steps {
-                archiveArtifacts artifacts: '**/target/spring-petclinic-3.1.0-SNAPSHOT.jar'
+                
                 junit testResults: '**/target/surefire-reports/TEST-*.xml'
             }
         }

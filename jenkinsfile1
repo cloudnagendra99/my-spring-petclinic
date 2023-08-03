@@ -1,0 +1,57 @@
+pipeline {
+    agent { label 'JDK-17' }
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+    }
+    triggers {
+        pollSCM('* * * * *')
+    }
+    tools {
+        jdk 'JDK-17'
+    }
+    stages {
+        stage('vcs') {
+            steps {
+                git url: 'https://github.com/cloudnagendra99/my-spring-petclinic.git',
+                    branch: 'develop'
+            }
+        }
+        stage('build and package') {
+            steps {
+                rtMavenDeployer (
+                    id: "SPC_DEPLOYER",
+                    serverId: "JFROG_CLOUD",
+                    releaseRepo: 'my-libs-release-local',
+                    snapshotRepo: 'my-libs-snapshot-local'
+                )
+            }
+        }
+        stage('run') {
+            steps {
+                rtMavenRun (
+                    tool: 'MAVEN', 
+                    pom: 'pom.xml',
+                    goals: 'clean install',
+                    deployerId: "SPC_DEPLOYER",
+                    //resolverId: "MAVEN_RESOLVER"
+                    //buildName: "${JOB_NAME}"
+                    //buildNumber: "${BUILD_ID}"
+                )
+            }
+        }
+        stage('publish') {
+            steps {    
+                rtPublishBuildInfo (
+                    serverId: "JFROG_CLOUD"
+                )
+            }
+        }
+        stage('reporting') {
+            steps {
+                
+                junit testResults: '**/target/surefire-reports/TEST-*.xml'
+            }
+        }
+    }
+
+}
